@@ -1,0 +1,10 @@
+[package]
+name = "plugin0"
+version = "0.1.0"
+authors = ["lagobas <maxim.kolesnik90@gmail.com>"]
+
+[dependencies]
+ecs = { path = "../../engine/ecs" }
+
+[lib]
+crate-type = ["dylib"]

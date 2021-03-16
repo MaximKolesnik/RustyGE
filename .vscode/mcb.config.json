@@ -1,0 +1,42 @@
+{
+	"version": "1.0.0",
+	"configTypes": [
+		{
+			"name": "Test",
+			"options": [
+				{
+					"name": "default",
+					"flags": ""
+				}
+			]
+		}
+	],
+	"build": {
+		"command": "./scripts/build_crate_path.sh engine && ./scripts/build_crate_path.sh plugins"
+	},
+	"buildCurrentFile": {
+		"command": "",
+		"extensions": ".c;.cpp"
+	},
+	"debug": {
+        "name": "MCB terminal",
+        "type": "lldb",
+        "request": "launch",
+        "program": "${workspaceFolder}/target/debug/launcher",
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": false
+                }
+            ]
+    },
+	"run": {
+		"command": "./scripts/run_engine.sh"
+	},
+	"clean": {
+		"command": ""
+	}
+}

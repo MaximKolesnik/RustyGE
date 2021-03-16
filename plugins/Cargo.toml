@@ -1,0 +1,5 @@
+[workspace]
+members = [
+  "plugin0",
+  "plugin1"
+]
