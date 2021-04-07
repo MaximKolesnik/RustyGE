@@ -15,14 +15,14 @@
 		"command": "./scripts/build_crate_path.sh engine && ./scripts/build_crate_path.sh plugins"
 	},
 	"buildCurrentFile": {
-		"command": "",
-		"extensions": ".c;.cpp"
+        "command": "./scripts/run_cargo_at.sh build $mcb{currentFile}$",
+		"extensions": ".rs"
 	},
 	"debug": {
         "name": "MCB terminal",
         "type": "lldb",
         "request": "launch",
-        "program": "${workspaceFolder}/target/debug/launcher",
+        "program": "${workspaceFolder}/.build/engine/debug/launcher",
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",
             "setupCommands": [
@@ -37,6 +37,6 @@
 		"command": "./scripts/run_engine.sh"
 	},
 	"clean": {
-		"command": ""
+		"command": "./scripts/run_cargo_at.sh clean engine && ./scripts/run_cargo_at.sh clean plugins"
 	}
 }

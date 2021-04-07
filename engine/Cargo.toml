@@ -1,5 +1,6 @@
 [workspace]
 members = [
-  "ecs",
-  "launcher"
+    "containers",
+    "ecs",
+    "launcher"
 ]
