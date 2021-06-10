@@ -2,5 +2,7 @@
 members = [
     "containers",
     "ecs",
-    "launcher"
+    "launcher",
+    "plugin_loader",
+    "reflection"
 ]

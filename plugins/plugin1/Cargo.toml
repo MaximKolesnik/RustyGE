@@ -3,5 +3,9 @@ name = "plugin1"
 version = "0.1.0"
 authors = ["lagobas <maxim.kolesnik90@gmail.com>"]
 
+[dependencies]
+plugin_loader = { path = "../../engine/plugin_loader" }
+reflection = { path = "../../engine/reflection" }
+
 [lib]
-crate-type = ["dylib"]
+crate-type = ["cdylib"]

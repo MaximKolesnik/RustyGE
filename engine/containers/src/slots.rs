@@ -2,6 +2,7 @@ const VERSION_MASK: u64 = 0xFFFFF_FFFFF;
 const INDEX_MASK: u64 = 0xFFFF_FFFF_FFFF_FFFF & (!VERSION_MASK);
 
 const VERSION_BITS: u32 = VERSION_MASK.count_ones();
+#[allow(dead_code)]
 const INDEX_BITS: u32 = INDEX_MASK.count_ones();
 
 const SLOTS_PER_PAGE: u64 = 64;
@@ -40,12 +41,6 @@ impl Slot {
     fn from_index_version(index: u64, version: u64) -> Slot {
         Slot {
             data: (index << VERSION_BITS) | (version & VERSION_MASK)
-        }
-    }
-
-    fn from_data(data: u64) -> Slot {
-        Slot {
-            data: data
         }
     }
 
