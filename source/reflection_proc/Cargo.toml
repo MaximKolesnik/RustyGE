@@ -1,0 +1,13 @@
+[package]
+name = "reflection_proc"
+version = "0.1.0"
+authors = ["lagobas <maxim.kolesnik90@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+reflection = { path = "../reflection" }
+syn = "1.0.*"
+quote = "1.0.*"
+
+[lib]
+proc-macro = true

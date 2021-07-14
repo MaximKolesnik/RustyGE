@@ -1,0 +1,12 @@
+[package]
+name = "plugin_loader"
+version = "0.1.0"
+authors = ["lagobas <maxim.kolesnik90@gmail.com>"]
+
+[dependencies]
+libloading = "0.5"
+ctor = "0.1.2"
+reflection = { path = "../reflection" }
+
+[lib]
+crate-type = ["dylib"]

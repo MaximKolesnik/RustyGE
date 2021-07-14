@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pushd $(dirname $0)/../engine
+pushd $(dirname $0)/../source
 echo "Running $1..."
-cargo run
+cargo run --verbose
 popd

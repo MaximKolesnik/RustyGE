@@ -1,0 +1,10 @@
+[workspace]
+members = [
+    "containers",
+    "ecs",
+    "launcher",
+    "plugin_loader",
+    "reflection",
+    "reflection_proc",
+    "plg_test"
+]

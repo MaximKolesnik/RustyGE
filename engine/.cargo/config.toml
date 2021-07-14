@@ -1,5 +1,0 @@
-[build]
-target-dir = "../.build/engine"
-
-[profile.release]
-debug = false
