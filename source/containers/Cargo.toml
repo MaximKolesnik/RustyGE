@@ -8,3 +8,4 @@ authors = ["lagobas <maxim.kolesnik90@gmail.com>"]
 [dependencies]
 static_assertions = "1.1.0"
 fnv = "1.0.*"
+simple-error = "0.1.9"
