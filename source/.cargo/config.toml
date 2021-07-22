@@ -1,3 +1,4 @@
 [build]
-target-dir = "../.build/source"
+target-dir = "../.build/"
 rustflags = ["-C", "prefer-dynamic"]
+
