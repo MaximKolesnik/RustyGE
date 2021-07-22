@@ -1,14 +1,9 @@
-pub mod entity;
+extern crate containers;
 
-pub mod main {
-    // pub use crate::entity::Entity;
+mod entity;
+mod system;
+mod world;
 
-    // struct Test {
-    //     t: u64
-    // }
-
-    // fn testFunc() {
-    //     let ent = Entity::new();
-    //     ent.get_index()
-    // }
-}
+pub use entity::*;
+pub use system::*;
+pub use world::*;

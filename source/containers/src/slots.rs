@@ -80,7 +80,7 @@ impl Generator {
         let slot = &mut self.slots[self.head];
         self.head = slot.get_index() as usize;
         
-        slot.set_index(assignedAt as u64);
+        slot.set_index(assigned_at as u64);
 
         *slot
     }
