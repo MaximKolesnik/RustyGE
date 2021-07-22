@@ -1,16 +1,24 @@
 extern crate libloading;
 extern crate ctor;
 extern crate reflection;
+extern crate containers;
+extern crate notify;
 
 pub use ctor::ctor;
 pub use ctor::dtor;
+use notify::Watcher;
 
+use std::time::Duration;
 use std::{path::PathBuf, str::FromStr};
+use containers::standard::*;
+use std::sync::mpsc;
 
 pub struct Loader {
     plugin_names: Vec<String>,
     search_path: PathBuf,
-    libs: Vec<(PathBuf, libloading::Library)>
+    libs: Vec<(PathBuf, libloading::Library)>,
+    reciever: mpsc::Receiver<notify::DebouncedEvent>,
+    watcher: notify::RecommendedWatcher,
 }
 
 impl Loader {
@@ -20,10 +28,15 @@ impl Loader {
 
         search_path.pop();
 
+        let channel = mpsc::channel();
+        let watcher = notify::watcher(channel.0, Duration::from_secs(1)).unwrap();
+
         Loader {
             plugin_names: Vec::new(),
             search_path,
-            libs: Vec::new()
+            libs: Vec::new(),
+            reciever: channel.1,
+            watcher
         }
     }
 
@@ -54,18 +67,18 @@ impl Loader {
                 .expect("Double push of module state");
 
             println!("Loading {}", plugin_path.to_string_lossy().to_mut());
-            match libloading::Library::new(plugin_path.clone()) {
+            match libloading::Library::new(&plugin_path) {
                 Ok(lib) => {
-                    self.libs.push( (plugin_path, lib) );
+                    self.libs.push( (plugin_path.clone(), lib) );
                     println!("Plugin {} is loaded", name);
                 },
                 Err(err) => println!("Cannot load plugin {}. Error {}", name, err),
             }
 
             reflection::module::pop_state().expect("Module state was not pushed");
-        }
 
-        reflection::module::test();
+            self.watcher.watch(plugin_path.as_path(), notify::RecursiveMode::NonRecursive);
+        }
     }
 
     pub fn unload(&mut self) {
@@ -74,6 +87,28 @@ impl Loader {
         }
 
         self.libs.clear();
+    }
+
+    pub fn update(& mut self) {
+        for event in self.reciever.try_iter() {
+            match event {
+                notify::DebouncedEvent::NoticeWrite(path)
+                    | notify::DebouncedEvent::Chmod(path) => {
+                    reflection::database::clear();
+                    self.libs.retain(|val| {
+                        val.0 != path
+                    });
+
+                    self.libs.push( (path.clone(), libloading::Library::new(&path).unwrap()) );
+                },
+                notify::DebouncedEvent::Write(path) => {
+                    println!("Write to {}", path.display());
+                },
+                _ => {
+                    println!("{:?}", event);
+                }
+            }
+        }
     }
 }
 

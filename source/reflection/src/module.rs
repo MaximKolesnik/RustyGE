@@ -26,7 +26,3 @@ pub fn push_state(module_name: &str) -> Result<(), simple_error::SimpleError> {
 pub fn pop_state() -> Result<(), simple_error::SimpleError> {
         return Database::get().consume_new_module();
 }
-
-pub fn test() {
-        println!("{}", Database::get());
-}

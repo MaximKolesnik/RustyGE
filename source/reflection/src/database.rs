@@ -1,3 +1,4 @@
+use crate::Reflected;
 use crate::casts::Registry;
 use crate::desc;
 use crate::module;
@@ -22,7 +23,7 @@ impl std::fmt::Display for Database {
 impl Database {
     pub fn create_struct<T>(&mut self, name: &'static str) -> &mut desc::Struct
         where
-            T: 'static
+            T: 'static + Reflected + Default
     {
         self.structs.push(desc::Struct::new::<T>(name));
         self.structs.last_mut().unwrap()
@@ -52,6 +53,10 @@ impl Database {
         &mut self.cast_registry
     }
 
+    pub fn get_structs(&mut self) -> &mut Vec<desc::Struct> {
+        &mut self.structs
+    }
+
     pub fn get() -> &'static mut Database {
         static mut SINGLETON: *mut Database = 0 as *mut Database;
         static ONCE: std::sync::Once = std::sync::Once::new();
@@ -72,4 +77,18 @@ impl Database {
             &mut *SINGLETON
         }
     }
+
+    fn clear(&mut self) {
+        self.structs = Vec::new();
+        self.cast_registry = casts::Registry::new();
+    }
+}
+
+pub fn iterate_struct() -> std::slice::Iter<'static, desc::Struct> {
+    Database::get().get_structs().iter()
+}
+
+// TODO remove this. used only to test hot reload
+pub fn clear() {
+    Database::get().clear();
 }

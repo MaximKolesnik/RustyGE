@@ -1,10 +1,12 @@
 use crate::{Reflected, database::Database};
+use crate::variant;
 use std::any::Any;
 use std::ptr::{self};
 
 pub struct Struct {
     type_id: std::any::TypeId,
     name: &'static str,
+    var_creator: Box<dyn Fn() -> variant::Variant>,
 }
 
 impl Struct {
@@ -16,12 +18,19 @@ impl Struct {
         return &self.name;
     }
 
+    pub fn create_instance(&self) -> variant::Variant {
+        (self.var_creator)()
+    }
+
     pub(crate) fn new<T>(name: &'static str) -> Struct
-        where T: 'static
+        where T: 'static + Reflected + Default
     {
         Struct {
             type_id: std::any::TypeId::of::<T>(),
             name: name,
+            var_creator: Box::new(|| -> variant::Variant {
+                T::create_variant()
+            }),
         }
     }
 }

@@ -6,7 +6,7 @@ extern crate simple_error;
 extern crate lazy_static;
 
 mod casts;
-mod database;
+pub mod database;
 pub mod module;
 pub mod registration;
 pub mod desc;

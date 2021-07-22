@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["lagobas <maxim.kolesnik90@gmail.com>"]
 
 [dependencies]
+ecs = { path = "../ecs" }
 reflection = { path = "../reflection" }
 reflection_proc = { path = "../reflection_proc" }
 plugin_loader = { path = "../plugin_loader" }
