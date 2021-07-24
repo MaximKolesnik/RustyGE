@@ -12,7 +12,7 @@
 		}
 	],
 	"build": {
-		"command": "./scripts/build_crate_path.sh source"
+		"command": "./scripts/cargo_build_all.sh"
 	},
 	"buildCurrentFile": {
         "command": "./scripts/run_cargo_at.sh 'build -Z extra-link-arg' $mcb{currentFile}$",
