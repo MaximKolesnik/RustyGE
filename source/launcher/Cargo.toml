@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 ecs = { path = "../ecs" }
+glfw = "0.20.*"
 plugin_loader = { path = "../plugin_loader" }
 reflection = { path = "../reflection" }
 reflection_proc = { path = "../reflection_proc" }

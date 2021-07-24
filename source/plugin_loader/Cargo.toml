@@ -8,7 +8,6 @@ libloading = "0.5"
 ctor = "0.1.2"
 reflection = { path = "../reflection" }
 containers = { path = "../containers" }
-notify = "4.0.*"
 
 [lib]
 crate-type = ["dylib"]

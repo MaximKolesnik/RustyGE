@@ -2,12 +2,11 @@ extern crate libloading;
 extern crate ctor;
 extern crate reflection;
 extern crate containers;
-extern crate notify;
 
 pub use ctor::ctor;
 pub use ctor::dtor;
-use notify::Watcher;
 
+use std::process::Stdio;
 use std::time::Duration;
 use std::{path::PathBuf, str::FromStr};
 use containers::standard::*;
@@ -17,8 +16,7 @@ pub struct Loader {
     plugin_names: Vec<String>,
     search_path: PathBuf,
     libs: Vec<(PathBuf, libloading::Library)>,
-    reciever: mpsc::Receiver<notify::DebouncedEvent>,
-    watcher: notify::RecommendedWatcher,
+    scripts_path: PathBuf,
 }
 
 impl Loader {
@@ -28,15 +26,17 @@ impl Loader {
 
         search_path.pop();
 
-        let channel = mpsc::channel();
-        let watcher = notify::watcher(channel.0, Duration::from_secs(1)).unwrap();
+        let scripts_folder = std::env::current_dir().expect("Current dir is not set");
+        let scripts_folder = scripts_folder.join("scripts");
+        if !scripts_folder.exists() {
+            panic!("Scripts folder does not exist {}", scripts_folder.display());
+        }
 
         Loader {
             plugin_names: Vec::new(),
             search_path,
             libs: Vec::new(),
-            reciever: channel.1,
-            watcher
+            scripts_path: scripts_folder,
         }
     }
 
@@ -52,15 +52,11 @@ impl Loader {
 
     pub fn load(&mut self) {
         for name in self.plugin_names.iter() {
-            let mut plugin_path = self.search_path.clone();
-
-            // TODO add dll support
-            plugin_path.push(name);
-            plugin_path.set_file_name(format!("{}{}", "lib", name));
-            plugin_path.set_extension("so");
+            let plugin_path = self.resolve_plugin_path(name);
 
             if !plugin_path.exists() {
                 println!("Plugin {} cannot be found {}", name, plugin_path.display());
+                continue;
             }
 
             reflection::module::push_state(plugin_path.to_string_lossy().to_mut())
@@ -76,8 +72,6 @@ impl Loader {
             }
 
             reflection::module::pop_state().expect("Module state was not pushed");
-
-            self.watcher.watch(plugin_path.as_path(), notify::RecursiveMode::NonRecursive);
         }
     }
 
@@ -89,26 +83,70 @@ impl Loader {
         self.libs.clear();
     }
 
-    pub fn update(& mut self) {
-        for event in self.reciever.try_iter() {
-            match event {
-                notify::DebouncedEvent::NoticeWrite(path)
-                    | notify::DebouncedEvent::Chmod(path) => {
-                    reflection::database::clear();
-                    self.libs.retain(|val| {
-                        val.0 != path
-                    });
+    pub fn perform_hot_reload(&mut self) {
+        if !self.can_be_compiled() {
+            return;
+        }
 
-                    self.libs.push( (path.clone(), libloading::Library::new(&path).unwrap()) );
+        reflection::database::clear();
+        self.libs.clear();
+
+        self.compile();
+
+        for entry in self.plugin_names.iter() {
+            let plugin_path = self.resolve_plugin_path(entry);
+            match libloading::Library::new(&plugin_path) {
+                Ok(lib) => {
+                    self.libs.push( (plugin_path.clone(), lib) );
+                    println!("Plugin {} is loaded", entry);
                 },
-                notify::DebouncedEvent::Write(path) => {
-                    println!("Write to {}", path.display());
-                },
-                _ => {
-                    println!("{:?}", event);
-                }
+                Err(err) => println!("Cannot load plugin {}. Error {}", entry, err),
             }
         }
+    }
+
+    fn can_be_compiled(&self) -> bool {
+        let mut check_command = std::process::Command::new(
+            self.scripts_path.join("run_cargo_at.sh"));
+        check_command.arg("check").arg("source").stdout(Stdio::null());
+        let out = check_command.output().expect("Cannot run check command");
+        match out.status.code() {
+            Some(code) => {
+                if code != 0 {
+                    println!("Compiled with errors!");
+                    return false;
+                }
+            },
+            None => {
+                println!("Check command exited!");
+                return false;
+            },
+        }
+
+        return true;
+    }
+
+    fn compile(&self) {
+        let mut compile_command = std::process::Command::new(
+            self.scripts_path.join("cargo_build_all.sh"));
+        compile_command.stdout(Stdio::null()).stderr(Stdio::null());
+        let out = compile_command.output().expect("Cannot run build command");
+    }
+
+    #[cfg(target_os = "linux")]
+    fn resolve_plugin_path(&self, plugin_name: &String) -> PathBuf {
+        let mut plugin_path = self.search_path.clone();
+
+        plugin_path.push(format!("lib{}.so", plugin_name));
+        plugin_path
+    }
+
+    #[cfg(target_os = "windows")]
+    fn resolve_plugin_path(&self, plugin_name: &String) -> PathBuf {
+        let mut plugin_path = self.search_path.clone();
+
+        plugin_path.push(format!("{}.dll", plugin_name));
+        plugin_path
     }
 }
 

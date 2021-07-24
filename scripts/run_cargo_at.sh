@@ -13,4 +13,7 @@ echo $dir
 
 pushd $dir
 cargo $1
+ec=$?
 popd
+
+exit $ec
