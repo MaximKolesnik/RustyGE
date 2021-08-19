@@ -4,6 +4,4 @@ extern crate plugin_loader;
 extern crate reflection;
 extern crate ecs;
 
-use plugin_loader::*;
-
-mod test_system;
+mod test;

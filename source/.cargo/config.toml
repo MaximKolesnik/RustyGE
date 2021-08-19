@@ -1,4 +1,4 @@
 [build]
 target-dir = "../.build/"
-rustflags = ["-C", "prefer-dynamic"]
+rustflags = ["-C", "prefer-dynamic", "-Z", "macro-backtrace"]
 

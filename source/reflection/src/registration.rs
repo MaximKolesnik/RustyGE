@@ -3,7 +3,7 @@ use crate::Reflected;
 use super::desc::*;
 use super::database::*;
 
-pub fn new_struct<T>(name: &'static str) -> StructBuilder<T>
+pub fn new_struct<T>(name: &str) -> StructBuilder<T>
     where T: 'static + Reflected + Default
 {
     let s = Database::get().create_struct::<T>(name);

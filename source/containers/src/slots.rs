@@ -173,20 +173,20 @@ impl<T> SparseStorage<T> {
         self.direct_storage.len()
     }
 
-    pub fn get(&self, slot: &Slot) -> Result<&T, simple_error::SimpleError> {
+    pub fn get(&self, slot: &Slot) -> Option<&T> {
         if !self.has(slot) {
-            simple_error::bail!("Slot is not allocated")
+            return None;
         }
 
-        Ok(self.get_unchecked(slot))
+        Some(self.get_unchecked(slot))
     }
 
-    pub fn get_mut(&mut self, slot: &Slot) -> Result<&mut T, simple_error::SimpleError> {
+    pub fn get_mut(&mut self, slot: &Slot) -> Option<&mut T> {
         if !self.has(slot) {
-            simple_error::bail!("Slot is not allocated")
+            return None;
         }
 
-        Ok(self.get_unchecked_mut(slot))
+        Some(self.get_unchecked_mut(slot))
     }
 
     pub fn get_unchecked(&self, slot: &Slot) -> &T {

@@ -21,7 +21,7 @@ impl std::fmt::Display for Database {
 }
 
 impl Database {
-    pub fn create_struct<T>(&mut self, name: &'static str) -> &mut desc::Struct
+    pub fn create_struct<T>(&mut self, name: &str) -> &mut desc::Struct
         where
             T: 'static + Reflected + Default
     {

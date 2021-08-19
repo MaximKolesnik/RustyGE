@@ -7,10 +7,8 @@ pub use ctor::ctor;
 pub use ctor::dtor;
 
 use std::process::Stdio;
-use std::time::Duration;
 use std::{path::PathBuf, str::FromStr};
 use containers::standard::*;
-use std::sync::mpsc;
 
 pub struct Loader {
     plugin_names: Vec<String>,
@@ -130,7 +128,7 @@ impl Loader {
         let mut compile_command = std::process::Command::new(
             self.scripts_path.join("cargo_build_all.sh"));
         compile_command.stdout(Stdio::null()).stderr(Stdio::null());
-        let out = compile_command.output().expect("Cannot run build command");
+        compile_command.output().expect("Cannot run build command");
     }
 
     #[cfg(target_os = "linux")]

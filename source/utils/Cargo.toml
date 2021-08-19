@@ -1,12 +1,8 @@
 [package]
-name = "ecs"
+name = "utils"
 version = "0.1.0"
 authors = ["lagobas <maxim.kolesnik90@gmail.com>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-containers = { path = "../containers" }
-reflection = { path = "../reflection" }
-reflection_proc = { path = "../reflection_proc" }
-utils = { path = "../utils" }

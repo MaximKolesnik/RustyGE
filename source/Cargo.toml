@@ -6,5 +6,6 @@ members = [
     "plugin_loader",
     "reflection",
     "reflection_proc",
-    "plg_test"
+    "plg_test",
+    "utils"
 ]

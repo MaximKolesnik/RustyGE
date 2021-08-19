@@ -2,10 +2,11 @@ use crate::{Reflected, database::Database};
 use crate::variant;
 use std::any::Any;
 use std::ptr::{self};
+use std::str::FromStr;
 
 pub struct Struct {
     type_id: std::any::TypeId,
-    name: &'static str,
+    name: String,
     var_creator: Box<dyn Fn() -> variant::Variant>,
 }
 
@@ -22,12 +23,12 @@ impl Struct {
         (self.var_creator)()
     }
 
-    pub(crate) fn new<T>(name: &'static str) -> Struct
+    pub(crate) fn new<T>(name: &str) -> Struct
         where T: 'static + Reflected + Default
     {
         Struct {
             type_id: std::any::TypeId::of::<T>(),
-            name: name,
+            name: String::from_str(name).unwrap(),
             var_creator: Box::new(|| -> variant::Variant {
                 T::create_variant()
             }),
@@ -48,7 +49,7 @@ impl<'a, T: 'static+ Reflected> StructBuilder<'a, T> {
         }
     }
 
-    pub fn has_trait<Trait>(&mut self) -> &Self
+    pub fn has_trait<Trait>(self) -> Self
         where Trait: 'static + Any + ?Sized + ptr::Pointee<Metadata = ptr::DynMetadata<Trait>>,
             T: std::marker::Unsize<Trait>
     {

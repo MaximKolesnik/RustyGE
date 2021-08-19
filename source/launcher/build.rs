@@ -1,9 +1,7 @@
-use std::env;
 use std::fs;
 use std::fs::File;
 use std::fs::Permissions;
 use std::io::Write;
-use std::ops::Add;
 use std::os::unix::prelude::PermissionsExt;
 use std::path::Path;
 use std::path::PathBuf;
@@ -11,8 +9,8 @@ use std::process::exit;
 
 fn main() {
     let lib_dir = std::env::var("CARGO").unwrap();
-    let mut lib_dir = Path::new(&lib_dir).parent().unwrap();
-    let mut lib_dir = lib_dir.join("../lib/");
+    let lib_dir = Path::new(&lib_dir).parent().unwrap();
+    let lib_dir = lib_dir.join("../lib/");
     let lib_dir = lib_dir.canonicalize().expect("Cannot find runtime path");
 
     let mut path_to_runtime = PathBuf::new();
@@ -41,7 +39,12 @@ fn main() {
     {
         let launcher_script = build_dir.join("launch.sh");
         if launcher_script.exists() {
-            fs::remove_file(&launcher_script);
+            match fs::remove_file(&launcher_script) {
+                Err(error) => {
+                    println!("Was not able to remove launch script {}", error);
+                },
+                _ => {},
+            }
         }
         let mut launcher_script = File::create(launcher_script)
             .expect("Cannot create launcher script");
@@ -62,7 +65,12 @@ fn main() {
                     let target_runtime = path.file_name().unwrap().to_str().unwrap();
                     let needs_runtime = path_to_runtime.to_str().unwrap();
                     if target_runtime.contains("libstd") && target_runtime != needs_runtime {
-                        fs::remove_file(path);
+                        match fs::remove_file(path) {
+                            Err(error) => {
+                                println!("Was not able to remove runtime {}", error);
+                            },
+                            _ => {},
+                        }
                     }
                     else if target_runtime == needs_runtime {
                         runtime_present = true;

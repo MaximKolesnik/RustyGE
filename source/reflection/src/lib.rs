@@ -1,5 +1,6 @@
 #![feature(ptr_metadata)]
 #![feature(unsize)]
+#![feature(box_into_inner)]
 
 #[macro_use]
 extern crate simple_error;
