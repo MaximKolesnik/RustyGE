@@ -267,8 +267,8 @@ mod tests {
         {
             let res = storage.get(&s);
 
-            if let Err(_) = res {
-                assert!(false, "This should not be an error")
+            if let Option::None = res {
+                assert!(false, "Slot should exist")
             }
 
             let res = res.unwrap();
@@ -280,8 +280,8 @@ mod tests {
         {
             let res = storage.get_mut(&s);
 
-            if let Err(_) = res {
-                assert!(false, "This should not be an error")
+            if let Option::None = res {
+                assert!(false, "Slot should exist")
             }
 
             let res = res.unwrap();
